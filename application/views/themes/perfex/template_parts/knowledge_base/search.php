@@ -6,7 +6,7 @@
                 <div class="col-md-8 col-md-offset-2">
                     <div class="text-center">
                         <h2 class="mbot30 kb-search-heading tw-font-semibold">
-                            <?= _l('kb_search_articles'); ?>qqqq
+                            <?= _l('kb_search_articles'); ?>qqqqaaaa
                         </h2>
                         <?= form_open(site_url('knowledge-base/search'), ['method' => 'GET', 'id' => 'kb-search-form']); ?>
                         <div class="form-group has-feedback has-feedback-left">
