@@ -17,3 +17,4 @@ application/logs/*
 !application/logs/.htaccess
 /vendor/
 application/config/private.php
+application/config/app-config.php
