@@ -18,3 +18,4 @@ application/logs/*
 /vendor/
 application/config/private.php
 application/config/app-config.php
+node_modules/
