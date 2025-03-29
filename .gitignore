@@ -17,7 +17,6 @@ application/logs/*
 !application/logs/.htaccess
 /vendor/
 application/config/private.php
-application/config/app-config.php
 node_modules/
 assets/builds/app.js.LICENSE.txt
 assets/builds/app.js.LICENSE.txt
