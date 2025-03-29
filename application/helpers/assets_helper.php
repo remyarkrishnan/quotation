@@ -42,6 +42,7 @@ function _init_admin_assets()
 
     // Javascript
     $CI->app_scripts->add('vendor-js', 'assets/builds/vendor-admin.js');
+    $CI->app_scripts->add('custom-js', 'assets/js/custom.js');
 
     $CI->app_scripts->add('jquery-migrate-js', 'assets/plugins/jquery/jquery-migrate.' . (ENVIRONMENT === 'production' ? 'min.' : '') . 'js');
 
