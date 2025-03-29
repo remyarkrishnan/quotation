@@ -3952,3 +3952,4 @@ $lang['integrations'] = 'Integrations';
 $lang['settings_group_other'] = 'Other';
 $lang['settings_group_configure_features'] = 'Configure Features';
 $lang['disable_ticket_public_url'] = 'Disable Ticket Public URL';
+$lang['lead_requirements']  = 'Lead Requirements';

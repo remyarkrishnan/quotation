@@ -4,27 +4,27 @@
     <div class="content accounting-template proposal">
         <div class="row">
             <?php
-         if (isset($proposal)) {
-             echo form_hidden('isedit', $proposal->id);
-         }
-$rel_type = '';
-$rel_id   = '';
-if (isset($proposal) || ($this->input->get('rel_id') && $this->input->get('rel_type'))) {
-    if ($this->input->get('rel_id')) {
-        $rel_id   = $this->input->get('rel_id');
-        $rel_type = $this->input->get('rel_type');
-    } else {
-        $rel_id   = $proposal->rel_id;
-        $rel_type = $proposal->rel_type;
-    }
-}
-?>
+            if (isset($proposal)) {
+                echo form_hidden('isedit', $proposal->id);
+            }
+            $rel_type = '';
+            $rel_id   = '';
+            if (isset($proposal) || ($this->input->get('rel_id') && $this->input->get('rel_type'))) {
+                if ($this->input->get('rel_id')) {
+                    $rel_id   = $this->input->get('rel_id');
+                    $rel_type = $this->input->get('rel_type');
+                } else {
+                    $rel_id   = $proposal->rel_id;
+                    $rel_type = $proposal->rel_type;
+                }
+            }
+            ?>
             <?= form_open($this->uri->uri_string(), ['id' => 'proposal-form', 'class' => '_transaction_form proposal-form']);
 
-if ($this->input->get('estimate_request_id')) {
-    echo form_hidden('estimate_request_id', $this->input->get('estimate_request_id'));
-}
-?>
+            if ($this->input->get('estimate_request_id')) {
+                echo form_hidden('estimate_request_id', $this->input->get('estimate_request_id'));
+            }
+            ?>
 
             <div class="col-md-12">
                 <h4 class="tw-mt-0 tw-font-bold tw-text-lg tw-text-neutral-700 tw-flex tw-items-center tw-space-x-2">
@@ -47,22 +47,22 @@ if ($this->input->get('estimate_request_id')) {
                                         data-none-selected-text="<?= _l('dropdown_non_selected_tex'); ?>">
                                         <option value=""></option>
                                         <option value="lead" <?php if ((isset($proposal) && $proposal->rel_type == 'lead') || $this->input->get('rel_type')) {
-                                            if ($rel_type == 'lead') {
-                                                echo 'selected';
-                                            }
-                                        } ?>><?= _l('proposal_for_lead'); ?>
+                                                                    if ($rel_type == 'lead') {
+                                                                        echo 'selected';
+                                                                    }
+                                                                } ?>><?= _l('proposal_for_lead'); ?>
                                         </option>
                                         <option value="customer" <?php if ((isset($proposal) && $proposal->rel_type == 'customer') || $this->input->get('rel_type')) {
-                                            if ($rel_type == 'customer') {
-                                                echo 'selected';
-                                            }
-                                        } ?>><?= _l('proposal_for_customer'); ?>
+                                                                        if ($rel_type == 'customer') {
+                                                                            echo 'selected';
+                                                                        }
+                                                                    } ?>><?= _l('proposal_for_customer'); ?>
                                         </option>
                                     </select>
                                 </div>
                                 <div class="form-group select-placeholder<?php if ($rel_id == '') {
-                                    echo ' hide';
-                                } ?> " id="rel_id_wrapper">
+                                                                                echo ' hide';
+                                                                            } ?> " id="rel_id_wrapper">
                                     <label for="rel_id"><span class="rel_id_label"></span></label>
                                     <div id="rel_id_select">
                                         <select name="rel_id" id="rel_id" class="ajax-search" data-width="100%"
@@ -86,10 +86,10 @@ if ($this->input->get('estimate_request_id')) {
                                             data-none-selected-text="<?= _l('dropdown_non_selected_tex'); ?>">
                                             <?php
 
-                                                                        if (isset($proposal) && $proposal->project_id) {
-                                                                            echo '<option value="' . $proposal->project_id . '" selected>' . e(get_project_name_by_id($proposal->project_id)) . '</option>';
-                                                                        }
-?>
+                                            if (isset($proposal) && $proposal->project_id) {
+                                                echo '<option value="' . $proposal->project_id . '" selected>' . e(get_project_name_by_id($proposal->project_id)) . '</option>';
+                                            }
+                                            ?>
                                         </select>
                                     </div>
                                 </div>
@@ -100,57 +100,57 @@ if ($this->input->get('estimate_request_id')) {
                                     </div>
                                     <div class="col-md-6">
                                         <?php
-                        $value = '';
-if (isset($proposal)) {
-    $value = _d($proposal->open_till);
-} else {
-    if (get_option('proposal_due_after') != 0) {
-        $value = _d(date('Y-m-d', strtotime('+' . get_option('proposal_due_after') . ' DAY', strtotime(date('Y-m-d')))));
-    }
-}
-echo render_date_input('open_till', 'proposal_open_till', $value); ?>
+                                        $value = '';
+                                        if (isset($proposal)) {
+                                            $value = _d($proposal->open_till);
+                                        } else {
+                                            if (get_option('proposal_due_after') != 0) {
+                                                $value = _d(date('Y-m-d', strtotime('+' . get_option('proposal_due_after') . ' DAY', strtotime(date('Y-m-d')))));
+                                            }
+                                        }
+                                        echo render_date_input('open_till', 'proposal_open_till', $value); ?>
                                     </div>
                                 </div>
                                 <?php
-   $selected   = '';
-$currency_attr = ['data-show-subtext' => true];
+                                $selected   = '';
+                                $currency_attr = ['data-show-subtext' => true];
 
-foreach ($currencies as $currency) {
-    if ($currency['isdefault'] == 1) {
-        $currency_attr['data-base'] = $currency['id'];
-    }
-    if (isset($proposal)) {
-        if ($currency['id'] == $proposal->currency) {
-            $selected = $currency['id'];
-        }
-        if ($proposal->rel_type == 'customer') {
-            $currency_attr['disabled'] = true;
-        }
-    } else {
-        if ($rel_type == 'customer') {
-            $customer_currency = $this->clients_model->get_customer_default_currency($rel_id);
-            if ($customer_currency != 0) {
-                $selected = $customer_currency;
-            } else {
-                if ($currency['isdefault'] == 1) {
-                    $selected = $currency['id'];
-                }
-            }
-            $currency_attr['disabled'] = true;
-        } else {
-            if ($currency['isdefault'] == 1) {
-                $selected = $currency['id'];
-            }
-        }
-    }
-}
-$currency_attr = apply_filters_deprecated('proposal_currency_disabled', [$currency_attr], '2.3.0', 'proposal_currency_attributes');
-$currency_attr = hooks()->apply_filters('proposal_currency_attributes', $currency_attr);
-?>
+                                foreach ($currencies as $currency) {
+                                    if ($currency['isdefault'] == 1) {
+                                        $currency_attr['data-base'] = $currency['id'];
+                                    }
+                                    if (isset($proposal)) {
+                                        if ($currency['id'] == $proposal->currency) {
+                                            $selected = $currency['id'];
+                                        }
+                                        if ($proposal->rel_type == 'customer') {
+                                            $currency_attr['disabled'] = true;
+                                        }
+                                    } else {
+                                        if ($rel_type == 'customer') {
+                                            $customer_currency = $this->clients_model->get_customer_default_currency($rel_id);
+                                            if ($customer_currency != 0) {
+                                                $selected = $customer_currency;
+                                            } else {
+                                                if ($currency['isdefault'] == 1) {
+                                                    $selected = $currency['id'];
+                                                }
+                                            }
+                                            $currency_attr['disabled'] = true;
+                                        } else {
+                                            if ($currency['isdefault'] == 1) {
+                                                $selected = $currency['id'];
+                                            }
+                                        }
+                                    }
+                                }
+                                $currency_attr = apply_filters_deprecated('proposal_currency_disabled', [$currency_attr], '2.3.0', 'proposal_currency_attributes');
+                                $currency_attr = hooks()->apply_filters('proposal_currency_attributes', $currency_attr);
+                                ?>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <?= render_select('currency', $currencies, ['id', 'name', 'symbol'], 'proposal_currency', $selected, $currency_attr);
-?>
+                                        ?>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group select-placeholder">
@@ -162,17 +162,17 @@ $currency_attr = hooks()->apply_filters('proposal_currency_attributes', $currenc
                                                     <?= _l('no_discount'); ?>
                                                 </option>
                                                 <option value="before_tax" <?php
-    if (isset($estimate)) {
-        if ($estimate->discount_type == 'before_tax') {
-            echo 'selected';
-        }
-    }?>><?= _l('discount_type_before_tax'); ?>
+                                                                            if (isset($estimate)) {
+                                                                                if ($estimate->discount_type == 'before_tax') {
+                                                                                    echo 'selected';
+                                                                                }
+                                                                            } ?>><?= _l('discount_type_before_tax'); ?>
                                                 </option>
                                                 <option value="after_tax" <?php if (isset($estimate)) {
-                                                    if ($estimate->discount_type == 'after_tax') {
-                                                        echo 'selected';
-                                                    }
-                                                } ?>><?= _l('discount_type_after_tax'); ?>
+                                                                                if ($estimate->discount_type == 'after_tax') {
+                                                                                    echo 'selected';
+                                                                                }
+                                                                            } ?>><?= _l('discount_type_after_tax'); ?>
                                                 </option>
                                             </select>
                                         </div>
@@ -192,8 +192,8 @@ $currency_attr = hooks()->apply_filters('proposal_currency_attributes', $currenc
                                     </p>
                                     <div class="onoffswitch">
                                         <input type="checkbox" id="allow_comments" class="onoffswitch-checkbox" <?php if ((isset($proposal) && $proposal->allow_comments == 1) || ! isset($proposal)) {
-                                            echo 'checked';
-                                        } ?> value="on" name="allow_comments">
+                                                                                                                    echo 'checked';
+                                                                                                                } ?> value="on" name="allow_comments">
                                         <label class="onoffswitch-label" for="allow_comments" data-toggle="tooltip"
                                             title="<?= _l('proposal_allow_comments_help'); ?>"></label>
                                     </div>
@@ -206,40 +206,40 @@ $currency_attr = hooks()->apply_filters('proposal_currency_attributes', $currenc
                                             <label for="status"
                                                 class="control-label"><?= _l('proposal_status'); ?></label>
                                             <?php
-                                          $disabled = '';
-if (isset($proposal)) {
-    if ($proposal->estimate_id != null || $proposal->invoice_id != null) {
-        $disabled = 'disabled';
-    }
-}
-?>
+                                            $disabled = '';
+                                            if (isset($proposal)) {
+                                                if ($proposal->estimate_id != null || $proposal->invoice_id != null) {
+                                                    $disabled = 'disabled';
+                                                }
+                                            }
+                                            ?>
                                             <select name="status" class="selectpicker" data-width="100%"
                                                 <?= e($disabled); ?>
                                                 data-none-selected-text="<?= _l('dropdown_non_selected_tex'); ?>">
                                                 <?php foreach ($statuses as $status) { ?>
-                                                <option
-                                                    value="<?= e($status); ?>"
-                                                    <?php if ((isset($proposal) && $proposal->status == $status) || (! isset($proposal) && $status == 0)) {
-                                                        echo 'selected';
-                                                    } ?>><?= format_proposal_status($status, '', false); ?>
-                                                </option>
+                                                    <option
+                                                        value="<?= e($status); ?>"
+                                                        <?php if ((isset($proposal) && $proposal->status == $status) || (! isset($proposal) && $status == 0)) {
+                                                            echo 'selected';
+                                                        } ?>><?= format_proposal_status($status, '', false); ?>
+                                                    </option>
                                                 <?php } ?>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <?php
-                                                            $selected = ! isset($proposal) && get_option('automatically_set_logged_in_staff_sales_agent') == '1' ? get_staff_user_id() : '';
+                                        $selected = ! isset($proposal) && get_option('automatically_set_logged_in_staff_sales_agent') == '1' ? get_staff_user_id() : '';
 
-foreach ($staff as $member) {
-    if (isset($proposal)) {
-        if ($proposal->assigned == $member['staffid']) {
-            $selected = $member['staffid'];
-        }
-    }
-}
-echo render_select('assigned', $staff, ['staffid', ['firstname', 'lastname']], 'proposal_assigned', $selected);
-?>
+                                        foreach ($staff as $member) {
+                                            if (isset($proposal)) {
+                                                if ($proposal->assigned == $member['staffid']) {
+                                                    $selected = $member['staffid'];
+                                                }
+                                            }
+                                        }
+                                        echo render_select('assigned', $staff, ['staffid', ['firstname', 'lastname']], 'proposal_assigned', $selected);
+                                        ?>
                                     </div>
                                 </div>
                                 <?php $value = (isset($proposal) ? $proposal->proposal_to : ''); ?>
@@ -312,7 +312,7 @@ echo render_select('assigned', $staff, ['staffid', ['firstname', 'lastname']], '
 
     $(function() {
         <?php if (isset($proposal) && $proposal->rel_type === 'customer') { ?>
-        init_proposal_project_select('select#project_id')
+            init_proposal_project_select('select#project_id')
         <?php } ?>
         $('body').on('change', '#rel_type', function() {
             if (_rel_type.val() != 'customer') {
@@ -402,7 +402,7 @@ echo render_select('assigned', $staff, ['staffid', ['firstname', 'lastname']], '
         });
         proposal_rel_id_select();
         <?php if (! isset($proposal) && $rel_id != '') { ?>
-        _rel_id.change();
+            _rel_id.change();
         <?php } ?>
     });
 

@@ -1707,4 +1707,13 @@ class Lead_manager extends AdminController
             'total' => total_rows(db_prefix() . 'lead_manager_mailbox', ['direction' => 'inbound', 'is_read' => 0, 'staffid' => $staff_id])
         ]);
     }
+
+    public function get_extra_lead_req_tr()
+    {
+        $lastRowNo = $this->input->get('lastRowNo'); 
+        $data['members']       = $this->staff_model->get('', ['is_not_staff' => 0, 'active' => 1]);
+        $data['row_no'] = (int)$lastRowNo +1;
+        $html = $this->load->view('admin/leads/lead_req_tr', $data, true);
+        echo $html;
+    }
 }
