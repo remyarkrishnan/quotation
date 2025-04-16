@@ -1,3 +1,4 @@
+<?php print_r($lead_req); ?>
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <div class="lead-wrapper<?= $openEdit == true ? ' open-edit' : ''; ?>"
     <?= isset($lead) && ($lead->junk == 1 || $lead->lost == 1) ? 'lead-is-just-or-lost' : ''; ?>>
@@ -139,7 +140,10 @@
             </a>
         </div>
     <?php } ?>
-    <?= form_open_multipart((isset($lead) ? admin_url('leads/lead/' . $lead->id) : admin_url('leads/lead')), ['id' => 'lead_form']); ?>
+
+    <form action="<?=  isset($lead) ? admin_url('leads/lead/' . $lead->id) : admin_url('leads/lead') ?>" method="post" enctype="multipart/form-data" id="lead_form">
+    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" 
+    value="<?= $this->security->get_csrf_hash(); ?>">
     <div class="row">
         <div class="lead-view<?= ! isset($lead) ? ' hide' : ''; ?>"
             id="leadViewWrapper">
@@ -533,6 +537,7 @@
             </div>
             <div id="tab2" class="profile-tab-content">
                 <?php $data['members'] = $members; ?>
+                <?php $data['lead_req'] = $lead_req; ?>
                 <?php $this->load->view('admin/leads/lead_requirements',$data); ?>
             </div>
             
@@ -563,7 +568,7 @@
         </div>
     <?php } ?>
     <div class="clearfix"></div>
-    <?= form_close(); ?>
+    </form>
 </div>
 <?php if (isset($lead) && $lead_locked == true) { ?>
     <script>

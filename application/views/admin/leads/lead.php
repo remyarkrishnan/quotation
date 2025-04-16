@@ -1,5 +1,6 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <div class="modal-header">
+    
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -59,6 +60,13 @@
                                 </a>
                             </li>
                             <?php if (isset($lead)) { ?>
+                                <li role="presentation" id="lead_req_li">
+                                <a href="#tab_lead_req" aria-controls="tab_lead_req" role="tab"
+                                    data-toggle="tab">
+                                    <i class="fa-regular fa-envelope menu-icon"></i>
+                                    <?= _l('lead_requirements'); ?>
+                                </a>
+                            </li>
                             <?php if (count($mail_activity) > 0 || isset($show_email_activity) && $show_email_activity) { ?>
                             <li role="presentation">
                                 <a href="#tab_email_activity" aria-controls="tab_email_activity" role="tab"
@@ -149,9 +157,14 @@
             <div class="tab-content">
                 <!-- from leads modal -->
                 <div role="tabpanel" class="tab-pane active" id="tab_lead_profile">
-                    <?php $this->load->view('admin/leads/profile'); ?>
+                    <?php $data['lead_req'] = $lead_req; ?>
+                    <?php $this->load->view('admin/leads/profile',$data); ?>
                 </div>
                 <?php if (isset($lead)) { ?>
+                <div role="tabpanel" class="tab-pane" id="tab_lead_req">
+                    <?php $data['lead_req'] = $lead_req; ?>
+                    <?php $this->load->view('admin/leads/lead_req_view',$data ); ?>
+                </div>
                 <?php if (count($mail_activity) > 0 || isset($show_email_activity) && $show_email_activity) { ?>
                 <div role="tabpanel" class="tab-pane" id="tab_email_activity">
                     <?php hooks()->do_action('before_lead_email_activity', ['lead' => $lead, 'email_activity' => $mail_activity]); ?>

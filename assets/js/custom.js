@@ -7,12 +7,15 @@ $(document).on("click", '.tabs li', function (e) {
 });
 
 $(document).on("click",".add_lead_req", function(){
+    $('#lead_tr_loading_div').html('<img src="https://i.gifer.com/YCZH.gif" alt="Loading..." >');
+
     let lastRowNo = $("table.lead_req_tbl tr:last").data("tr-no");
     $.ajax({
         url: "Lead_manager/get_extra_lead_req_tr", 
         type: "GET",
         data: { lastRowNo: lastRowNo },
         success: function(response){
+            $('#lead_tr_loading_div').html('');
             $("table.lead_req_tbl tbody").append(response);
             
         },
@@ -50,4 +53,8 @@ $(document).on("change", ".file-input", function(event){
         };
         reader.readAsDataURL(file);
     }
+});
+$("body").on("click", "[lead-edit]", function (e) {
+    e.preventDefault();
+    $("#lead_req_li").hide();
 });

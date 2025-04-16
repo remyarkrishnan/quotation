@@ -1,9 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class LeadRequirements_model extends CI_Model {
+class LeadRequirementProducts_model extends CI_Model {
 
-    private $table = 'tbllead_requirements'; // Table name
+    private $table = 'tbllead_requirement_products'; // Table name
 
     public function __construct() {
         parent::__construct();

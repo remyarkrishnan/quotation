@@ -12,14 +12,14 @@
                 
                 <div class="row">
                     <div class="col-md-6 ">
-                        <?= render_input('lead_req_rfq_no', 'RFQ No', "", 'text', ""); ?>
+                        <?= render_input('lead_req_rfq_no', 'RFQ No', $lead_req ? $lead_req[0]['rfq_no'] : "", 'text', ""); ?>
                     </div>
                     <div class="col-md-6">
-                        <?= render_date_input('lead_req_date', 'Date', ""); ?>
+                        <?= render_date_input('lead_req_date', 'Date', $lead_req ? $lead_req[0]['date'] : ""); ?>
                     </div>
                     <div class="col-md-6">
                         <?php
-                        echo render_date_input('lead_req_open_till', 'Open Till', ""); ?>
+                        echo render_date_input('lead_req_open_till', 'Open Till', $lead_req ? $lead_req[0]['open_till'] : "" ); ?>
                     </div>
                 </div>
             </div>
@@ -65,55 +65,116 @@
         </tr>
     </thead>
     <tbody>
-        <tr id="tr_1" data-tr-no="1">
-            <td>
-                <input type="checkbox" name="check_1" id="check_1" >
-            </td>
-            <td>
-                <?= render_input('product_name_1', '', ""); ?>
-            </td>
-            <td>
-                <?= render_textarea('description_1', '', ""); ?>
-            </td>
-            <td>
-                <div class="form-group" app-field-wrapper="product_name">
-                    <select class="form-control" name="lead_req_unit_1" id="unit_1">
-                        <option value="1" ><?= _l('quantity_as_qty'); ?></option>
-                        <option value="2" ><?= _l('quantity_as_hours'); ?></option>
-                        <option value="3" ><?= _l('estimate_table_quantity_heading'); ?>/<?= _l('estimate_table_hours_heading'); ?></option>
-                    </select>
-                </div>
-            </td>
-            <td>
-                <?= render_input('lead_req_qty_1', '', ""); ?>
-            </td>
-            <td class="req_prod_img">
-            <div class="image-preview">
-                        <img src="https://via.placeholder.com/100" alt="Preview">
+        <?php if(empty($lead_req )) { ?>
+            <tr id="tr_1" data-tr-no="1">
+                <td>
+                    <input type="checkbox" name="check_1" id="check_1" >
+                </td>
+                <td>
+                    <?= render_input('lead_req_product_name_1', '', ""); ?>
+                </td>
+                <td>
+                    <?= render_textarea('lead_req_description_1', '', ""); ?>
+                </td>
+                <td>
+                    <div class="form-group" app-field-wrapper="product_name">
+                        <select class="form-control" name="lead_req_unit_1" id="unit_1">
+                            <option value="1" ><?= _l('quantity_as_qty'); ?></option>
+                            <option value="2" ><?= _l('quantity_as_hours'); ?></option>
+                            <option value="3" ><?= _l('estimate_table_quantity_heading'); ?>/<?= _l('estimate_table_hours_heading'); ?></option>
+                        </select>
                     </div>
-                    <input type="file" class="file-input" accept="image/*" name="lead_req_image_1"  id="image_1">
-                    <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
-                        <path d="M440-200h80v-167l64 64 56-57-160-160-160 160 57 56 63-63v167ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/>
-                    </svg>
-            </td>
-            <td><?= render_input('lead_req_link_1', '', ""); ?></td>
-            <td>
+                </td>
+                <td>
+                    <?= render_input('lead_req_qty_1', '', ""); ?>
+                </td>
+                <td class="req_prod_img">
+                <div class="image-preview">
+                            <img src="https://via.placeholder.com/100" alt="Preview">
+                        </div>
+                        <input type="file" class="file-input" name="lead_req_image_1"  id="image_1">
+                        <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                            <path d="M440-200h80v-167l64 64 56-57-160-160-160 160 57 56 63-63v167ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/>
+                        </svg>
+                </td>
+                <td><?= render_input('lead_req_link_1', '', ""); ?></td>
+                <td>
 
-                <?php
-                
-                // echo render_select('assigned_1', $members, ['staffid', ['firstname', 'lastname']], '', "", [])
-                
+                    <?php
+                    
+                    // echo render_select('assigned_1', $members, ['staffid', ['firstname', 'lastname']], '', "", [])
+                    
+                    ?>
+                    <select name="lead_req_assigned_user_1" id="assigned_user_1" class="form-control">
+                        <option value="">Select a Member</option> <!-- Optional default option -->
+                        <?php foreach ($members as $member): ?>
+                            <option value="<?= htmlspecialchars($member['staffid']) ?>">
+                                <?= htmlspecialchars($member['firstname'] . ' ' . $member['lastname']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+        <?php  } else {
+            $i =1;
+            foreach($lead_req as $key) {
                 ?>
-                <select name="lead_req_assigned_1" id="assigned_1" class="form-control">
-                    <option value="">Select a Member</option> <!-- Optional default option -->
-                    <?php foreach ($members as $member): ?>
-                        <option value="<?= htmlspecialchars($member['staffid']) ?>">
-                            <?= htmlspecialchars($member['firstname'] . ' ' . $member['lastname']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </td>
-        </tr>
+                <tr id="tr_<?php echo $i; ?>" data-tr-no="<?php echo $i; ?>">
+                <td>
+                    <input type="checkbox" name="check_<?php echo $i; ?>" id="check_<?php echo $i; ?>" >
+                </td>
+                <td>
+                    <?= render_input('lead_req_product_name_'.$i, "", $key['product_name']); ?>
+                </td>
+                <td>
+                    <?= render_textarea('lead_req_description_'.$i, "", $key['description']); ?>
+                </td>
+                <td>
+                    <div class="form-group" app-field-wrapper="product_name">
+                        <select class="form-control" name="lead_req_unit_<?php echo $i; ?>" id="unit_<?php echo $i; ?>">
+                            <option value="1" <?php if($key['unit'] == "1" ){ echo 'selected';} ?> ><?= _l('quantity_as_qty'); ?></option>
+                            <option value="2"  <?php if($key['unit'] == "2" ){ echo 'selected';} ?> ><?= _l('quantity_as_hours'); ?></option>
+                            <option value="3"  <?php if($key['unit'] == "3" ){ echo 'selected';} ?> ><?= _l('estimate_table_quantity_heading'); ?>/<?= _l('estimate_table_hours_heading'); ?></option>
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <?= render_input('lead_req_qty_'.$i, "", $key['qty']?? ''); ?>
+                </td>
+                <td class="req_prod_img">
+                <div class="image-preview">
+                            <img src="https://via.placeholder.com/100" alt="Preview">
+                        </div>
+                        <input type="file" class="file-input" name="lead_req_image_<?php echo $i; ?>"  id="image_<?php echo $i; ?>">
+                        <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                            <path d="M440-200h80v-167l64 64 56-57-160-160-160 160 57 56 63-63v167ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/>
+                        </svg>
+                </td>
+                <td><?= render_input('lead_req_link_'.$i,"",  $key['link']?? ''); ?></td>
+                <td>
+
+                    <?php
+                    
+                    // echo render_select('assigned_1', $members, ['staffid', ['firstname', 'lastname']], '', "", [])
+                    
+                    ?>
+                    <select name="lead_req_assigned_user_<?php echo $i; ?>" id="assigned_user_<?php echo $i; ?>" class="form-control">
+                        <option value="">Select a Member</option> <!-- Optional default option -->
+                        <?php foreach ($members as $member): ?>
+                            <option value="<?= htmlspecialchars($member['staffid']) ?>" <?php if($key['assigned_user'] == $member['staffid'] ){ echo 'selected';} ?>>
+                                <?= htmlspecialchars($member['firstname'] . ' ' . $member['lastname']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+                <?php
+                $i++;
+            }
+        ?>
+            
+        <?php } ?>
     </tbody>
     </thead>
 </table>
+<div id="lead_tr_loading_div" style="display: flex; justify-content: center; align-items: center; height: 50px;"></div>

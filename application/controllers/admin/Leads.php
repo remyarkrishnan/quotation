@@ -15,6 +15,8 @@ class Leads extends AdminController
     {
         parent::__construct();
         $this->load->model('leads_model');
+        $this->load->model('leadrequirements_model');
+        $this->load->model('leadrequirementproducts_model');
     }
 
     /* List all leads */
@@ -79,12 +81,23 @@ class Leads extends AdminController
         if (!is_staff_member() || ($id != '' && !$this->leads_model->staff_can_access_lead($id))) {
             ajax_access_denied();
         }
-
+        
         if ($this->input->post()) {
+            $generalData = [];
+            $leadReqData = [];
+            foreach ($this->input->post()  as $key => $value) {
+                if (strpos($key, 'lead_req') === 0) {
+                    $leadReqData[$key] = $value;
+                } else {
+                    $generalData[$key] = $value;
+                }
+            }
+           
             if ($id == '') {
-                print_r($_FILES);
-                exit;
-                $id      = $this->leads_model->add($this->input->post());
+               
+                $id      = $this->leads_model->add($generalData);
+
+                $this->add_or_update_lead_request_data($id, $leadReqData, "add");
                 $message = $id ? _l('added_successfully', _l('lead')) : '';
 
                 echo json_encode([
@@ -97,7 +110,8 @@ class Leads extends AdminController
                 $emailOriginal   = $this->db->select('email')->where('id', $id)->get(db_prefix() . 'leads')->row()->email;
                 $proposalWarning = false;
                 $message         = '';
-                $success         = $this->leads_model->update($this->input->post(), $id);
+                $success         = $this->leads_model->update($generalData, $id);
+                $this->add_or_update_lead_request_data($id, $leadReqData, "update");
 
                 if ($success) {
                     $emailNow = $this->db->select('email')->where('id', $id)->get(db_prefix() . 'leads')->row()->email;
@@ -122,6 +136,42 @@ class Leads extends AdminController
         echo json_encode([
             'leadView' => $this->_get_lead_data($id),
         ]);
+    }
+
+    public function add_or_update_lead_request_data($id, $leadReqData, $type)
+    {
+        if($leadReqData) {
+            $new_lead_req_arr = [
+                "lead_id" => $id,
+                "rfq_no" => $leadReqData['lead_req_rfq_no'],
+                "date" => $leadReqData['lead_req_date'],
+                "open_till" => $leadReqData['lead_req_open_till']
+            ];
+            if($type == "add") {
+                $lead_req_id      = $this->leadrequirements_model->add($new_lead_req_arr);
+            }else {
+                unset($new_lead_req_arr['lead_id']);
+                $lead_req_id      = $this->leadrequirements_model->update($id, $new_lead_req_arr);
+                $this->leadrequirementproducts_model->delete($lead_req_id);
+            }
+            
+            $items = [];
+            foreach ($leadReqData as $key => $value) {
+                if (preg_match('/lead_req_(\w+)_(\d+)/', $key, $matches)) {
+                    $field = $matches[1]; // Field name (product_name, description, etc.)
+                    $index = $matches[2]; // Item index
+            
+                    $items[$index][$field] = $value;
+                }
+            }
+           
+            foreach ($items as $key => $array) {
+                $array['lead_req_id'] = $lead_req_id;
+                $lead_req_prod_id      = $this->leadrequirementproducts_model->add($array);
+            }
+
+            
+        }
     }
 
     private function _get_lead_data($id = '')
@@ -173,8 +223,8 @@ class Leads extends AdminController
             $data['total_tasks']       = $leadProfileBadges->getCount('tasks');
             $data['total_proposals']   = $leadProfileBadges->getCount('proposals');
         }
-
-
+       
+        $data['lead_req'] = $this->getLeadRequirementsWithProducts($lead->id);
         $data['statuses'] = $this->leads_model->get_status();
         $data['sources']  = $this->leads_model->get_source();
 
@@ -184,6 +234,20 @@ class Leads extends AdminController
             'data'          => $this->load->view('admin/leads/lead', $data, true),
             'reminder_data' => $reminder_data,
         ];
+    }
+
+    public function getLeadRequirementsWithProducts($lead_id)
+    {
+       
+        $this->db->select('r.*, p.id as product_id,p.assigned_user, s.firstname,s.lastname,  p.product_name,p.qty,p.unit,p.link,p.description');
+        $this->db->from(db_prefix().'lead_requirements as r'); // use from() instead of get()
+        $this->db->join(db_prefix().'lead_requirement_products as p', 'r.id = p.lead_req_id', 'left');
+        $this->db->join(db_prefix().'staff as s', ' p.assigned_user = s.staffid ', 'left');
+        $this->db->where('r.lead_id', $lead_id);
+        $query = $this->db->get();
+      
+        return $query->result_array();
+        
     }
 
     public function leads_kanban_load_more()
